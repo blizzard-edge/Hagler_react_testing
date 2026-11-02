@@ -11,40 +11,48 @@ import {
   type CartItem,
 } from './cartUtils';
 
+// Creates a cart item with default values that can be overridden.
+function createCartItem(overrides: Partial<CartItem> = {}): CartItem {
+  return {
+    id: 1,
+    name: 'Book',
+    price: 10,
+    quantity: 1,
+    ...overrides,
+  };
+}
+
+// Creates a cart containing a single item.
+function createSingleItemCart(
+  overrides: Partial<CartItem> = {}
+): CartItem[] {
+  return [createCartItem(overrides)];
+}
+
+// Creates a cart from an array of items.
+function createCart(items: CartItem[] = []): CartItem[] {
+  return [...items];
+}
+
 // Tests the calculation of an individual cart item's total.
 describe('calculateItemTotal', () => {
   it('should multiply the item price by its quantity', () => {
     // Arrange: Create a cart item with a price of $10 and quantity of 3.
-    const item: CartItem = {
-      id: 1,
-      name: 'Book',
-      price: 10,
-      quantity: 3,
-    };
+    const item = createCartItem({ price: 10, quantity: 3 });
 
     // Assert: The expected total is $30.
     expect(calculateItemTotal(item)).toBe(30);
   });
 
   it('should return zero when the quantity is zero', () => {
-    const item: CartItem = {
-      id: 1,
-      name: 'Book',
-      price: 10,
-      quantity: 0,
-    };
+    const item = createCartItem({ price: 10, quantity: 0 });
 
     // A zero quantity should produce a zero total.
     expect(calculateItemTotal(item)).toBe(0);
   });
 
   it('should handle decimal prices', () => {
-    const item: CartItem = {
-      id: 1,
-      name: 'Pen',
-      price: 2.5,
-      quantity: 4,
-    };
+    const item = createCartItem({ price: 2.5, quantity: 4 });
 
     // toBeCloseTo is useful when testing floating-point calculations.
     expect(calculateItemTotal(item)).toBeCloseTo(10);
@@ -55,10 +63,10 @@ describe('calculateItemTotal', () => {
 describe('calculateSubtotal', () => {
   it('should calculate the subtotal of multiple items', () => {
     // Arrange: Create a cart containing two different products.
-    const items: CartItem[] = [
-      { id: 1, name: 'Book', price: 10, quantity: 2 },
-      { id: 2, name: 'Pen', price: 5, quantity: 3 },
-    ];
+    const items: CartItem[] = createCart([
+      createCartItem({ id: 1, name: 'Book', price: 10, quantity: 2 }),
+      createCartItem({ id: 2, name: 'Pen', price: 5, quantity: 3 }),
+    ]);
 
     // The subtotal should be (10 * 2) + (5 * 3) = $35.
     expect(calculateSubtotal(items)).toBe(35);
@@ -70,9 +78,12 @@ describe('calculateSubtotal', () => {
   });
 
   it('should handle a cart containing one item', () => {
-    const items: CartItem[] = [
-      { id: 1, name: 'Notebook', price: 8, quantity: 2 },
-    ];
+    const items = createSingleItemCart({
+      id: 1,
+      name: 'Notebook',
+      price: 8,
+      quantity: 2,
+    });
 
     expect(calculateSubtotal(items)).toBe(16);
   });
@@ -128,7 +139,7 @@ describe('calculateTax', () => {
 describe('calculateTotal', () => {
   it('should calculate the total without a discount', () => {
     const items: CartItem[] = [
-      { id: 1, name: 'Book', price: 20, quantity: 1 },
+      createCartItem({ id: 1, name: 'Book', price: 20, quantity: 1 }),
     ];
 
     // $20 subtotal + $1.60 tax = $21.60.
@@ -137,7 +148,7 @@ describe('calculateTotal', () => {
 
   it('should calculate the total with a 5% discount', () => {
     const items: CartItem[] = [
-      { id: 1, name: 'Book', price: 55, quantity: 1 },
+      createCartItem({ id: 1, name: 'Book', price: 55, quantity: 1 }),
     ];
 
     // $55 subtotal - $2.75 discount + $4.18 tax = $56.43.
@@ -146,7 +157,7 @@ describe('calculateTotal', () => {
 
   it('should calculate the total with a 10% discount', () => {
     const items: CartItem[] = [
-      { id: 1, name: 'Laptop', price: 100, quantity: 1 },
+      createCartItem({ id: 1, name: 'Laptop', price: 100, quantity: 1 }),
     ];
 
     // $100 subtotal - $10 discount + $7.20 tax = $97.20.
@@ -159,7 +170,7 @@ describe('calculateTotal', () => {
 
   it('should round the final total to two decimal places', () => {
     const items: CartItem[] = [
-      { id: 1, name: 'Item', price: 10.333, quantity: 1 },
+      createCartItem({ id: 1, name: 'Item', price: 10.333, quantity: 1 }),
     ];
 
     const total = calculateTotal(items);
