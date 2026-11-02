@@ -64,3 +64,4 @@ export function formatCurrency(amount: number): string {
  */
 export function isValidQuantity(quantity: number): boolean {
   return Number.isInteger(quantity) && quantity > 0;
+}
