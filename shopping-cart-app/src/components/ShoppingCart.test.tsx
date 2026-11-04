@@ -192,9 +192,9 @@ describe('ShoppingCart', () => {
 
     const quantityInput = screen.getByLabelText('Quantity for Notebook');
 
-    // Attempt to change the quantity to zero.
-    await user.clear(quantityInput);
-    await user.type(quantityInput, '0');
+    // Select the existing value and replace it directly with zero.
+    await user.click(quantityInput);
+    await user.keyboard('{Control>}a{/Control}0');
 
     // The original quantity should remain unchanged.
     expect(quantityInput).toHaveValue(1);
