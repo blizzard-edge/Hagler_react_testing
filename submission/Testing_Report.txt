@@ -1,0 +1,21 @@
+Testing Report: Shopping Cart Application
+
+Overview & Testing Strategy
+The shopping cart app was tested using Vitest, React Testing Library and jsdom. The testing was split into two areas: the utility functions which do the actual calculation of the cart values and the React component which is the cart itself. This allowed the calculation functions to be tested in isolation before I looked at how they worked through the cart component.
+
+The test suite has 48 passing tests. The resulting coverage report shows the following:
+- Statement Coverage: 88.67%
+- Line Coverage: 89.79%
+- Function Coverage: 86.95%
+- Branch Coverage: 85.00%
+
+Utility Function Testing
+The utility test suite consists of 31 tests covering all seven core functions: item totals, subtotals, discount calc, tax calc, final total, currency formatting, and quantity validation. A lot of attention has been paid to edge cases and boundary conditions including floating point arithmetic, empty shopping carts, zero and negative values, invalid quantities, the $50 and $100 discount thresholds. Assertions such as toBe, toEqual, and toBeCloseTo were chosen based on what the expected result of the function would be in each case, so I can test the function in all the various scenarios.
+
+React Component Testing & Observations
+Using React Testing Library and 'userEvent' I wrote 17 component tests to simulate user interaction and check the UI and behavior. These tests cover displaying the initial empty cart, adding products (including trimming the whitespace off the product name), validating inputs, removing an item, changing the quantity, recalculating the subtotals and totals, applying a discount and clearing the cart.
+
+Further testing of zero and empty quantity inputs revealed a validation issue with the provided component. A zero quantity is explicitly rejected but clearing the quantity field causes the component to store 'NaN' because it doesn't properly validate invalid numeric values. This was discovered during component testing without any changes to the provided application code. It demonstrates the importance of testing edge cases which may not be part of the normal user workflow.
+
+Conclusion
+Overall, this project demonstrated of the value of automated testing in verifying application functionality, checking edge cases, and identifying unexpected behavior. Vitest and React Testing Library were used to test both the individual utility functions and the interactive React components. The generated coverage report provided a useful measure of the test suite's effectiveness and while also identifying areas where additional testing could improve coverage.
